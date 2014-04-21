@@ -4,5 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry kind="lib" path="/Users/dcdrake/Documents/workspace/postgresql-9.3-1101.jdbc4.jar"/>
 	<classpathentry kind="lib" path="libs/json-simple-1.1.1.jar"/>
+	<classpathentry kind="lib" path="/Users/dcdrake/Desktop/swt.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
