@@ -13,6 +13,8 @@ import org.eclipse.swt.events.SelectionEvent;
 public class Database {
 
 	protected Shell Database;
+	private String[] states;
+	private String[] ratings;
 
 	/**
 	 * Launch the application.
@@ -50,6 +52,13 @@ public class Database {
 		Database.setSize(432, 279);
 		Database.setText("Database GUI");
 		
+		states = new String[] {"AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI",
+				"ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO",
+				"MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI",
+				"SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"};
+		
+		ratings = new String[] {"0", "1", "2", "3", "4"};
+		
 		Label lblUniversity = new Label(Database, SWT.NONE);
 		lblUniversity.setBounds(10, 10, 59, 14);
 		lblUniversity.setText("University");
@@ -61,22 +70,32 @@ public class Database {
 		List list = new List(Database, SWT.BORDER);
 		list.setBounds(10, 30, 98, 33);
 		
-		List list_1 = new List(Database, SWT.BORDER);
-		list_1.setBounds(10, 92, 59, 33);
+		List state_list = new List(Database, SWT.BORDER);
+		state_list.setBounds(10, 92, 59, 60);
+		
+		for(int i=0; i<states.length; i++)
+			  state_list.add(states[i]);
 		
 		List list_2 = new List(Database, SWT.BORDER);
-		list_2.setBounds(99, 92, 98, 33);
+		list_2.setBounds(99, 92, 98, 60);
 		
 		Label lblState = new Label(Database, SWT.NONE);
 		lblState.setBounds(10, 69, 59, 14);
 		lblState.setText("State");
 		
-		List list_3 = new List(Database, SWT.BORDER);
-		list_3.setBounds(300, 30, 98, 33);
+		List rating_list = new List(Database, SWT.BORDER);
+		rating_list.setBounds(300, 30, 98, 53);
+		
+		for(int i=0; i<ratings.length; i++)
+			  rating_list.add(ratings[i]);
 		
 		Label lblRatingAbove = new Label(Database, SWT.NONE);
-		lblRatingAbove.setBounds(300, 10, 77, 14);
+		lblRatingAbove.setBounds(300, 10, 77, 19);
 		lblRatingAbove.setText("Rating above:");
+		
+		Button btnNewButton = new Button(Database, SWT.NONE);
+		btnNewButton.setBounds(172, 219, 94, 28);
+		btnNewButton.setText("Search");
 
 	}
 }
