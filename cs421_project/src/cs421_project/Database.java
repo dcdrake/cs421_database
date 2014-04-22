@@ -126,16 +126,18 @@ public class Database {
 			public void widgetSelected(SelectionEvent event) {
 				String[] state_array = state_list.getSelection();
 				text.setText(state_array[0]);
+				city_list.removeAll();
 
 				try {
 					Statement st;
 					st = conn.createStatement();
-					String state = state_array[0];
-					String query = "SELECT DISTINCT city FROM business WHERE state = " + state;
-					ResultSet rs = st.executeQuery(query);
+					String state = "'" +state_array[0] + "'";
+					//System.out.println(state);
+					ResultSet rs = st.executeQuery("SELECT DISTINCT city FROM business WHERE state = "+ state + "ORDER BY city");
 					while (rs.next())
 					{
 						String city  = rs.getString("city");
+						//System.out.println(city);
 						city_list.add(city);
 					} rs.close();
 					st.close();
