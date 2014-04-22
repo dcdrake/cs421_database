@@ -28,6 +28,7 @@ public class Database {
 	private String[] states;
 	private String[] ratings;
 	private String[] schools;
+	private List city_list;
 	private Text text;
 
 	/**
@@ -65,14 +66,14 @@ public class Database {
 	 */
 	protected void createContents() throws SQLException {
 		Database = new Shell();
-		Database.setSize(487, 471);
+		Database.setSize(600, 475);
 		Database.setText("Database GUI");
 
 		String url = "jdbc:postgresql://localhost:63333/jagabel_project";
 		Properties props = new Properties();
-		props.setProperty("user","jagabel");
-		props.setProperty("password","tnO81cW");
-		Connection conn = DriverManager.getConnection(url, props);
+		props.setProperty("user","user");
+		props.setProperty("password","pass");
+		final Connection conn = DriverManager.getConnection(url, props);
 		if(conn.isValid(0)){
 			System.out.println("Connection Established");
 		}
@@ -82,11 +83,7 @@ public class Database {
 				"MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI",
 				"SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"};
 
-		ratings = new String[] {"0.1", "0.2", "0.3", "0.4", "0.5", "0.6", "0.7", "0.8", "0.9", "1.0",
-				"1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "2.0",
-				"2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "2.7", "2.8", "2.9", "3.0",
-				"3.1", "3.2", "3.3", "3.4", "3.5", "3.6", "3.7", "3.8", "3.9", "4.0",
-				"4.1", "4.2", "4.3", "4.4", "4.5", "4.6", "4.7", "4.8", "4.9"};
+		ratings = new String[] {"0.5", "1.0", "1.5", "2.0", "2.5", "3.0", "3.5", "4.0", "4.5"};
 
 		schools = new String[] {"Brown University", "California Institute of Technology", 
 				"California Polytechnic State University", "Carnegie Mellon University", 
@@ -116,23 +113,45 @@ public class Database {
 			school_list.add(schools[i]);
 
 
-		List state_list = new List(Database, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
+		final List state_list = new List(Database, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
 		state_list.setBounds(10, 177, 59, 92);
 
 		for(int i=0; i<states.length; i++)
 			state_list.add(states[i]);
 
-		List city_list = new List(Database, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
+		city_list = new List(Database, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
 		city_list.setBounds(99, 177, 191, 92);
 
-		Statement st = conn.createStatement();
-		ResultSet rs = st.executeQuery("SELECT DISTINCT city FROM business ORDER BY city");
-		while (rs.next())
-		{
-			String city  = rs.getString("city");
-			city_list.add(city);
-		} rs.close();
-		st.close();
+		state_list.addSelectionListener(new SelectionListener() {
+			public void widgetSelected(SelectionEvent event) {
+				String[] state_array = state_list.getSelection();
+				text.setText(state_array[0]);
+
+				try {
+					Statement st;
+					st = conn.createStatement();
+					String state = state_array[0];
+					String query = "SELECT DISTINCT city FROM business WHERE state = " + state;
+					ResultSet rs = st.executeQuery(query);
+					while (rs.next())
+					{
+						String city  = rs.getString("city");
+						city_list.add(city);
+					} rs.close();
+					st.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent arg0) {
+				// TODO Auto-generated method stub
+
+			}
+		});
 
 		Label lblState = new Label(Database, SWT.NONE);
 		lblState.setBounds(10, 157, 59, 14);
@@ -172,12 +191,19 @@ public class Database {
 		btnNewButton_1.setBounds(247, 411, 133, 28);
 		btnNewButton_1.setText("I'm Feeling Lucky");
 
-		text = new Text(Database, SWT.BORDER);
-		text.setBounds(10, 303, 466, 102);
+		text = new Text(Database, SWT.BORDER | SWT.V_SCROLL);
+		text.setBounds(310, 302, 280, 102);
 
 		Label lblResults = new Label(Database, SWT.NONE);
 		lblResults.setBounds(10, 283, 59, 14);
 		lblResults.setText("Results:");
+
+		List list = new List(Database, SWT.BORDER);
+		list.setBounds(10, 302, 244, 103);
+
+		Label lblDetailedInformation = new Label(Database, SWT.NONE);
+		lblDetailedInformation.setBounds(310, 282, 133, 14);
+		lblDetailedInformation.setText("Detailed Information:");
 
 
 
