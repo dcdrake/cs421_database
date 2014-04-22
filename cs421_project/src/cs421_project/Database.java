@@ -99,45 +99,42 @@ public class Database {
 				"University of Waterloo", "University of Wisconsin - Madison", "Virginia Tech"};
 
 		Label lblUniversity = new Label(Database, SWT.NONE);
-		lblUniversity.setBounds(10, 10, 59, 14);
+		lblUniversity.setBounds(10, 28, 59, 14);
 		lblUniversity.setText("University");
 
 		Label lblNewLabel = new Label(Database, SWT.NONE);
-		lblNewLabel.setBounds(99, 157, 59, 19);
+		lblNewLabel.setBounds(399, 28, 59, 19);
 		lblNewLabel.setText("City");
 
 		final List school_list = new List(Database, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
-		school_list.setBounds(10, 30, 280, 100);
+		school_list.setBounds(10, 48, 280, 100);
 
 		for(int i=0; i<schools.length; i++)
 			school_list.add(schools[i]);
 
 
 		final List state_list = new List(Database, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
-		state_list.setBounds(10, 177, 59, 92);
+		state_list.setBounds(334, 48, 59, 100);
 
 		for(int i=0; i<states.length; i++)
 			state_list.add(states[i]);
 
 		city_list = new List(Database, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
-		city_list.setBounds(99, 177, 191, 92);
+		city_list.setBounds(399, 48, 191, 100);
 
 		state_list.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent event) {
 				String[] state_array = state_list.getSelection();
-				text.setText(state_array[0]);
 				city_list.removeAll();
 
 				try {
 					Statement st;
 					st = conn.createStatement();
 					String state = "'" +state_array[0] + "'";
-					//System.out.println(state);
 					ResultSet rs = st.executeQuery("SELECT DISTINCT city FROM business WHERE state = "+ state + "ORDER BY city");
 					while (rs.next())
 					{
 						String city  = rs.getString("city");
-						//System.out.println(city);
 						city_list.add(city);
 					} rs.close();
 					st.close();
@@ -156,25 +153,25 @@ public class Database {
 		});
 
 		Label lblState = new Label(Database, SWT.NONE);
-		lblState.setBounds(10, 157, 59, 14);
+		lblState.setBounds(334, 28, 59, 14);
 		lblState.setText("State");
 
 		List rating_list = new List(Database, SWT.BORDER | SWT.V_SCROLL);
-		rating_list.setBounds(345, 30, 98, 100);
+		rating_list.setBounds(82, 179, 98, 100);
 
 		for(int i=0; i<ratings.length; i++)
 			rating_list.add(ratings[i]);
 
 		Label lblRatingAbove = new Label(Database, SWT.NONE);
-		lblRatingAbove.setBounds(345, 10, 87, 19);
+		lblRatingAbove.setBounds(81, 154, 87, 19);
 		lblRatingAbove.setText("Rating above:");
 
 		Button searchButton = new Button(Database, SWT.NONE);
-		searchButton.setBounds(129, 411, 94, 28);
+		searchButton.setBounds(156, 425, 94, 28);
 		searchButton.setText("Search");
 
 		List category_list = new List(Database, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
-		category_list.setBounds(320, 177, 156, 92);
+		category_list.setBounds(284, 179, 222, 92);
 
 		Statement st2 = conn.createStatement();
 		ResultSet rs2 = st2.executeQuery("SELECT DISTINCT category FROM business_categories ORDER BY category");
@@ -186,28 +183,42 @@ public class Database {
 		st2.close();
 
 		Label lblCategories = new Label(Database, SWT.NONE);
-		lblCategories.setBounds(320, 157, 69, 19);
-		lblCategories.setText("Categories");
+		lblCategories.setBounds(284, 154, 120, 19);
+		lblCategories.setText("Categories (up to 3)");
 
 		Button btnNewButton_1 = new Button(Database, SWT.NONE);
-		btnNewButton_1.setBounds(247, 411, 133, 28);
+		btnNewButton_1.setBounds(256, 425, 133, 28);
 		btnNewButton_1.setText("I'm Feeling Lucky");
 
 		text = new Text(Database, SWT.BORDER | SWT.V_SCROLL);
-		text.setBounds(310, 302, 280, 102);
+		text.setBounds(310, 317, 280, 102);
 
 		Label lblResults = new Label(Database, SWT.NONE);
-		lblResults.setBounds(10, 283, 59, 14);
+		lblResults.setBounds(10, 296, 59, 14);
 		lblResults.setText("Results:");
 
 		List list = new List(Database, SWT.BORDER);
-		list.setBounds(10, 302, 244, 103);
+		list.setBounds(10, 316, 244, 103);
 
 		Label lblDetailedInformation = new Label(Database, SWT.NONE);
-		lblDetailedInformation.setBounds(310, 282, 133, 14);
+		lblDetailedInformation.setBounds(310, 296, 133, 14);
 		lblDetailedInformation.setText("Detailed Information:");
 
+		Label lblSelect = new Label(Database, SWT.BORDER);
+		lblSelect.setBounds(10, 8, 59, 14);
+		lblSelect.setText("Select:");
 
+		Label lblOr = new Label(Database, SWT.NONE);
+		lblOr.setBounds(299, 80, 59, 14);
+		lblOr.setText("OR");
+
+		Label lblWith = new Label(Database, SWT.NONE);
+		lblWith.setBounds(10, 211, 59, 14);
+		lblWith.setText("WITH");
+
+		Label lblAnd = new Label(Database, SWT.NONE);
+		lblAnd.setBounds(219, 211, 59, 14);
+		lblAnd.setText("AND");
 
 
 		searchButton.addSelectionListener(new SelectionListener() {
