@@ -2,8 +2,8 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
-	<classpathentry kind="lib" path="/Users/dcdrake/Documents/workspace/postgresql-9.3-1101.jdbc4.jar"/>
 	<classpathentry kind="lib" path="libs/json-simple-1.1.1.jar"/>
-	<classpathentry kind="lib" path="/Users/dcdrake/Desktop/swt.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Jarr/Desktop/eclipse-standard-kepler-SR1-win32-x86_64/eclipse/plugins/org.eclipse.swt.win32.win32.x86_64_3.102.1.v20130827-2048.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Jarr/workspace/postgresql-9.3-1101.jdbc4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
