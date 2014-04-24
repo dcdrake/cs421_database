@@ -282,13 +282,36 @@ public class Database {
 				Statement s;
 				try {
 					s = conn.createStatement();
-					ResultSet r = s.executeQuery("SELECT DISTINCT business.name, business.stars FROM business, business_categories, school WHERE business.business_id = business_categories.business_id AND business.stars > '"+ rating + "' AND business_categories.category = '" + category + "' AND school.name = '" + school + "' ORDER BY business.stars DESC LIMIT 1");
+					ResultSet r = s.executeQuery("SELECT DISTINCT business.name, business.address, "
+							+ "business.city, business.state, business.stars, "
+							+ "business.review_count, business.open, business.stars "
+							+ "FROM business, business_categories, school "
+							+ "WHERE business.business_id = business_categories.business_id AND school.city = business.city AND business.stars > '"+ rating + "' AND business_categories.category = '" + category + "' AND school.name = '" + school + "' ORDER BY business.stars DESC LIMIT 1");
 
 					r.next();
 
-					String biz_name = r.getString("name");
-					fireSingleBusinessQuery(biz_name, conn);
+					String name = r.getString(1);
+					String resultsString = "";
+					resultsString = "Name: " + r.getString(1) + "\n";
+					resultsString += "Address: " + r.getString(2) + "\n";
+					resultsString += "City: " + r.getString(3) + "\n";
+					resultsString += "State: " + r.getString(4) + "\n";
+					resultsString += "Stars: " + r.getDouble(5) + "\n";
+					resultsString += "Reviews: " + r.getLong(6) + "\n";
 
+					//fireSingleBusinessQuery(biz_name, conn);
+					text.setText(resultsString);
+
+					/*Business Reviews query */
+					ResultSet r2 = s.executeQuery("SELECT review.text, review.votes FROM review, business WHERE business.business_id = review.business_id "
+							+ "AND review.business_id = ("
+							+ "SELECT business_id FROM business WHERE business.name = '" + name + "'" +") "
+							+ "ORDER BY review.votes DESC LIMIT 3");
+					r2.next();
+					String raw_review_string = r2.getString("text");
+					review_text.setText(raw_review_string);
+
+					r2.close();
 					r.close();
 					s.close();
 
