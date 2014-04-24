@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Properties;
+import java.lang.Math.*;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
@@ -196,7 +197,7 @@ public class Database {
 
 		Label lblCategories = new Label(Database, SWT.NONE);
 		lblCategories.setBounds(284, 154, 120, 19);
-		lblCategories.setText("Categories (up to 3)");
+		lblCategories.setText("Categories");
 
 		Button btnNewButton_1 = new Button(Database, SWT.NONE);
 		btnNewButton_1.setBounds(256, 425, 133, 28);
@@ -429,6 +430,22 @@ public class Database {
 			@Override
 			public void widgetDefaultSelected(SelectionEvent arg0) {
 				// TODO Auto-generated method stub
+			}
+			
+		});
+		
+		btnNewButton_1.addSelectionListener(new SelectionListener(){
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				// TODO Auto-generated method stub				
+								
 			}
 			
 		});
