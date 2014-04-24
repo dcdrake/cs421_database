@@ -30,15 +30,16 @@ public class Database {
 	private String[] states;
 	private String[] ratings;
 	private String[] schools;
-	
+
 	private List city_list;
+	private List resultsList;
 	private Text text;
-	
+
 	private String schoolResult = "";
 	private String cityResult = "";
 	private String stateResult = "";
 	private String cateResults = "";
-	
+
 
 	/**
 	 * Launch the application.
@@ -80,60 +81,35 @@ public class Database {
 
 		String url = "jdbc:postgresql://localhost:63333/jagabel_project";
 		Properties props = new Properties();
-		props.setProperty("user","P");
-		props.setProperty("password","U");
+		props.setProperty("user","jagabel");
+		props.setProperty("password","tnO81cW");
 		final Connection conn = DriverManager.getConnection(url, props);
 		if(conn.isValid(0)){
 			System.out.println("Connection Established");
 		}
 
+		/*
+		 * Populating static lists.
+		 */
 		states = new String[] {"AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI",
-				
-
-"ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO",
-				
-
-"MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI",
+				"ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO",
+				"MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI",
 				"SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"};
 
-		ratings = new String[] {"0.5", "1.0", "1.5", "2.0", "2.5", "3.0", "3.5", "4.0", 
-
-"4.5"};
+		ratings = new String[] {"0.5", "1.0", "1.5", "2.0", "2.5", "3.0", "3.5", "4.0", "4.5"};
 
 		schools = new String[] {"Brown University", "California Institute of Technology", 
-				"California Polytechnic State University", "Carnegie Mellon 
-
-University", 
-				"Columbia University", "Cornell University", "Georgia Institute 
-
-of Technology", 
-				"Harvard University", "Harvey Mudd College", "Massachusetts 
-
-Institute of Technology", 
-				"Princeton University", "Purdue University", "Rensselaer 
-
-Polytechnic Institute", 
-				"Rice University", "Stanford University", "University of 
-
-California - Los Angeles", 
-				"University of California - San Diego", "University of California 
-
-at Berkeley", 
-				"University of Illinois - Urbana-Champaign", "University of 
-
-Maryland - College Park", 
-				"University of Massachusetts - Amherst", "University of Michigan 
-
-- Ann Arbor", 
-				"University of North Carolina - Chapel Hill", "University of 
-
-Pennsylvania", 
-				"University of Southern California", "University of Texas - 
-
-Austin", "University of Washington", 
-				"University of Waterloo", "University of Wisconsin - Madison", 
-
-"Virginia Tech"};
+				"California Polytechnic State University", "Carnegie Mellon University", 
+				"Columbia University", "Cornell University", "Georgia Institute of Technology", 
+				"Harvard University", "Harvey Mudd College", "Massachusetts Institute of Technology", 
+				"Princeton University", "Purdue University", "Rensselaer Polytechnic Institute", 
+				"Rice University", "Stanford University", "University of California - Los Angeles", 
+				"University of California - San Diego", "University of California at Berkeley", 
+				"University of Illinois - Urbana-Champaign", "University of Maryland - College Park", 
+				"University of Massachusetts - Amherst", "University of Michigan - Ann Arbor", 
+				"University of North Carolina - Chapel Hill", "University of Pennsylvania", 
+				"University of Southern California", "University of Texas - Austin", "University of Washington", 
+				"University of Waterloo", "University of Wisconsin - Madison","Virginia Tech"};
 
 		Label lblUniversity = new Label(Database, SWT.NONE);
 		lblUniversity.setBounds(10, 28, 59, 14);
@@ -168,9 +144,7 @@ Austin", "University of Washington",
 					Statement st;
 					st = conn.createStatement();
 					String state = "'" +state_array[0] + "'";
-					ResultSet rs = st.executeQuery("SELECT DISTINCT city FROM 
-
-business WHERE state = "+ state + "ORDER BY city");
+					ResultSet rs = st.executeQuery("SELECT DISTINCT city FROM business WHERE state = "+ state + "ORDER BY city");
 					while (rs.next())
 					{
 						String city  = rs.getString("city");
@@ -195,7 +169,7 @@ business WHERE state = "+ state + "ORDER BY city");
 		lblState.setBounds(334, 28, 59, 14);
 		lblState.setText("State");
 
-		List rating_list = new List(Database, SWT.BORDER | SWT.V_SCROLL);
+		final List rating_list = new List(Database, SWT.BORDER | SWT.V_SCROLL);
 		rating_list.setBounds(82, 179, 98, 100);
 
 		for(int i=0; i<ratings.length; i++)
@@ -206,18 +180,14 @@ business WHERE state = "+ state + "ORDER BY city");
 		lblRatingAbove.setText("Rating above:");
 
 		Button searchButton = new Button(Database, SWT.NONE);
-		searchButton.setBounds(156, 425, 94, 28);
+		searchButton.setBounds(135, 425, 94, 28);
 		searchButton.setText("Search");
 
-		final List category_list = new List(Database, SWT.BORDER | SWT.MULTI | 
-
-SWT.V_SCROLL);
+		final List category_list = new List(Database, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
 		category_list.setBounds(284, 179, 222, 92);
 
 		Statement st2 = conn.createStatement();
-		ResultSet rs2 = st2.executeQuery("SELECT DISTINCT category FROM 
-
-business_categories ORDER BY category");
+		ResultSet rs2 = st2.executeQuery("SELECT DISTINCT category FROM business_categories ORDER BY category");
 		while (rs2.next())
 		{
 			String category  = rs2.getString("category");
@@ -230,7 +200,7 @@ business_categories ORDER BY category");
 		lblCategories.setText("Categories (up to 3)");
 
 		Button btnNewButton_1 = new Button(Database, SWT.NONE);
-		btnNewButton_1.setBounds(256, 425, 133, 28);
+		btnNewButton_1.setBounds(235, 425, 133, 28);
 		btnNewButton_1.setText("I'm Feeling Lucky");
 
 		text = new Text(Database, SWT.BORDER | SWT.V_SCROLL);
@@ -240,8 +210,8 @@ business_categories ORDER BY category");
 		lblResults.setBounds(10, 296, 59, 14);
 		lblResults.setText("Results:");
 
-		final List list = new List(Database, SWT.BORDER);
-		list.setBounds(10, 316, 244, 103);
+		resultsList = new List(Database, SWT.BORDER | SWT.V_SCROLL);
+		resultsList.setBounds(10, 316, 244, 103);
 
 		Label lblDetailedInformation = new Label(Database, SWT.NONE);
 		lblDetailedInformation.setBounds(310, 296, 133, 14);
@@ -263,87 +233,158 @@ business_categories ORDER BY category");
 		lblAnd.setBounds(219, 211, 59, 14);
 		lblAnd.setText("AND");
 
+		Button clearButton = new Button(Database, SWT.NONE);
+		clearButton.setBounds(374, 425, 114, 28);
+		clearButton.setText("Clear Selection");
+
+		clearButton.addSelectionListener(new SelectionListener(){
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent arg0) {
+			}
+
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				city_list.deselectAll();
+				state_list.deselectAll();
+				school_list.deselectAll();
+				category_list.deselectAll();
+				rating_list.deselectAll();
+
+			}
+
+		});
+
+
+		/*
+		 * Search button that uses all the selected items in the lists to form an SQL query
+		 */
+
 		searchButton.addSelectionListener(new SelectionListener() {
 
 			public void widgetSelected(SelectionEvent event) {
-				
+
 				Statement s;
 				try {
 					s = conn.createStatement();
 					System.out.println(buildQuery());
 					ResultSet r = s.executeQuery(buildQuery());
-					list.removeAll();
+					resultsList.removeAll();
 					while (r.next())
 					{
-						list.add(r.getString(1));
+						resultsList.add(r.getString(1));
 					}	
-					
+
 					r.close(); 
 					s.close();
-					
+					//school_list.deselectAll();
+
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} 
-				
+
 			}
 
 			public void widgetDefaultSelected(SelectionEvent event) {
 			}
 		});
-		
+
+		//====================================================================================================================
+		/*
+		 * Display the information for a business when it is selected form the list of results
+		 */
+		resultsList.addSelectionListener(new SelectionListener(){
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent arg0) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void widgetSelected(SelectionEvent event) {
+				String result = resultsList.getSelection()[0];
+
+				try {
+					Statement st;
+					st = conn.createStatement();
+					//String business = result[0];
+					String query = "SELECT * FROM business WHERE business.name = '"+ result + "'";
+					System.out.println(query);
+					ResultSet rs = st.executeQuery(query);
+					while (rs.next())
+					{
+						String name  = rs.getString("name");
+						text.setText(name);
+					} rs.close();
+					st.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+			}
+
+		});
+
+		//====================================================================================================================
+
+
+
+
 		school_list.addMouseListener(new MouseListener(){
 
 			@Override
 			public void mouseDoubleClick(MouseEvent arg0) {
 				// TODO Auto-generated method stub
-				
+
 			}
 
 			@Override
 			public void mouseDown(MouseEvent arg0) {
 				// TODO Auto-generated method stub
 				schoolResult = school_list.getSelection()[0];
-				
-				
+
+
 			}
 
 			@Override
 			public void mouseUp(MouseEvent arg0) {
 				// TODO Auto-generated method stub
-				
+
 			}
-			
+
 		});
-		
+
 		city_list.addMouseListener(new MouseListener(){
 
-				@Override
-				public void mouseDoubleClick(MouseEvent arg0) {
-					// TODO Auto-generated method stub
-					
-				}
+			@Override
+			public void mouseDoubleClick(MouseEvent arg0) {
+				// TODO Auto-generated method stub
 
-				@Override
-				public void mouseDown(MouseEvent arg0) {
-					// TODO Auto-generated method stub
-					cityResult = city_list.getSelection()[0];
-				}
+			}
 
-				@Override
-				public void mouseUp(MouseEvent arg0) {
-					// TODO Auto-generated method stub
-					
-				}
-				
-			});
-		
+			@Override
+			public void mouseDown(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				cityResult = city_list.getSelection()[0];
+			}
+
+			@Override
+			public void mouseUp(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+
+			}
+
+		});
+
 		state_list.addMouseListener(new MouseListener(){
 
 			@Override
 			public void mouseDoubleClick(MouseEvent arg0) {
 				// TODO Auto-generated method stub
-				
+
 			}
 
 			@Override
@@ -355,36 +396,37 @@ business_categories ORDER BY category");
 			@Override
 			public void mouseUp(MouseEvent arg0) {
 				// TODO Auto-generated method stub
-				
+
 			}
-			
+
 		});
-		
+
 		category_list.addMouseListener(new MouseListener(){
 
 			@Override
 			public void mouseDoubleClick(MouseEvent arg0) {
 				// TODO Auto-generated method stub
-				
+
 			}
 
 			@Override
 			public void mouseDown(MouseEvent arg0) {
 				// TODO Auto-generated method stub
 				cateResults = category_list.getSelection()[0];
-				
+				System.out.println(cateResults);
+
 			}
 
 			@Override
 			public void mouseUp(MouseEvent arg0) {
 				// TODO Auto-generated method stub
-				
+
 			}
-			
+
 		});
-		
+
 	}
-	
+
 	private String buildQuery()
 	{
 		String result = "";
@@ -393,49 +435,51 @@ business_categories ORDER BY category");
 		String statePortion = "";
 		String schoolPortion = "";
 		boolean hasWhere = false;
-		
+
 		if (schoolResult != "")
 		{
-			schoolPortion = "school.name = '" + schoolResult + "' AND school.city = 
-
-business.city AND ";
+			schoolPortion = "school.name = '" + schoolResult + "' AND school.city = business.city AND ";
 			hasWhere = true;
 		}
-		
+
 		if (cityResult != "")
 		{
 			cityPortion = "city = '" + cityResult + "' AND ";
 			hasWhere = true;
 		}
-		
+
 		if (stateResult != "" && cityPortion == "")
 		{
-			System.out.println("STATE RESULT = " + stateResult);
+			//System.out.println("STATE RESULT = " + stateResult);
 			statePortion = "state = '" + stateResult + "' AND ";
 			hasWhere = true;
 		}
-		
+
+		if (cateResults != "")
+		{
+			catePortion = "business_categories.business_id = business.business_id AND business_categories.category = '" + cateResults + "'";
+			hasWhere = true;
+		}
+
+
 		if (hasWhere && schoolPortion == "")
 		{
-			result = "SELECT DISTINCT name FROM business WHERE " + cityPortion + 
-
-statePortion;
-			result = result.substring(0, result.length() - 4);
-			result += "ORDER BY name LIMIT 10 ";
+			result = "SELECT DISTINCT name, stars FROM business, business_categories WHERE " + cityPortion + statePortion + catePortion;
+			result = result.substring(0, result.length());
+			result += "ORDER BY business.stars DESC LIMIT 10 ";
 		}
 		else if (hasWhere)
 		{
-			result = "SELECT DISTINCT business.name FROM business, school WHERE " + 
-
-schoolPortion;
-			result = result.substring(0, result.length() - 4);
-			result += "ORDER BY name LIMIT 10 ";
+			result = "SELECT DISTINCT business.name, business.stars FROM business, school, business_categories WHERE " + schoolPortion + catePortion;
+			result = result.substring(0, result.length());
+			result += "ORDER BY business.stars DESC LIMIT 10 ";
 		}
 		else
 		{
-			result = "SELECT DISTINCT name FROM business ORDER BY name LIMIT 10 ";
+			result = "SELECT DISTINCT name, stars FROM business ORDER BY business.stars LIMIT 10 ";
+			//result = "Please select a location";
 		}
 		return result;
 	}
-	
+
 }
