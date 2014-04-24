@@ -652,18 +652,30 @@ public class Database {
 
 		/*Business Reviews query */
 		ResultSet r2 = s.executeQuery("SELECT review.text, review.votes FROM review, business WHERE business.business_id = review.business_id "
-				+ "AND review.business_id = ("
-				+ "SELECT business_id FROM business WHERE business.name = '" + name + "'" +") "
+				+ "AND review.business_id in ("
+				+ "SELECT business_id FROM business WHERE business.name = '" + name + "') "
 				+ "ORDER BY review.votes DESC LIMIT 3");
-		r2.next();
-		String raw_review_string = r2.getString("text");
+		//r2.next();
+		String raw_review_string = "";// = r2.getString("text");
+		int voteCount = 0;
+		while (r2.next())
+		{
+			if (r2.getInt("votes") > voteCount)
+			{
+				voteCount = r2.getInt("votes");
+				raw_review_string = r2.getString("text");
+			}
+		}
+		
+	//	String raw_review_string = r2.getString("text");
 		review_text.setText(raw_review_string);
 
 		/*Additional info query*/
 		ResultSet r = s2.executeQuery(query);
 		String resultsString = "";
-		r.next();
-
+	//	r.next();
+		while (r.next())
+		{
 		resultsString = "Name: " + r.getString(1) + "\n";
 		resultsString += "Address: " + r.getString(2) + "\n";
 		resultsString += "City: " + r.getString(3) + "\n";
@@ -676,10 +688,12 @@ public class Database {
 			resultsString += "Currently Closed";
 
 		text.setText(resultsString);
-
+		}
 
 		r.close();
 		s.close();
+		s2.close();
+		r2.close();
 
 	}
 
