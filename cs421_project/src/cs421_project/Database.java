@@ -200,9 +200,9 @@ public class Database {
 		lblCategories.setBounds(284, 154, 120, 19);
 		lblCategories.setText("Categories");
 
-		Button btnNewButton_1 = new Button(Database, SWT.NONE);
-		btnNewButton_1.setBounds(244, 515, 133, 28);
-		btnNewButton_1.setText("I'm Feeling Lucky");
+		Button recommend_button = new Button(Database, SWT.NONE);
+		recommend_button.setBounds(244, 515, 133, 28);
+		recommend_button.setText("I'm Feeling Lucky");
 
 		text = new Text(Database, SWT.BORDER | SWT.V_SCROLL);
 		text.setBounds(310, 317, 280, 159);
@@ -261,6 +261,43 @@ public class Database {
 
 				schoolResult = "";
 				review_text.setText("");
+			}
+
+		});
+
+		recommend_button.addSelectionListener(new SelectionListener(){
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent arg0) {
+			}
+
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				String category, school, state, city, rating = "";
+				category = category_list.getSelection()[0];
+				rating = rating_list.getSelection()[0];
+				school = school_list.getSelection()[0];
+				//state = state_list.getSelection()[0];
+				//city = city_list.getSelection()[0];
+				Statement s;
+				try {
+					s = conn.createStatement();
+					ResultSet r = s.executeQuery("SELECT DISTINCT business.name, business.stars FROM business, business_categories, school WHERE business.business_id = business_categories.business_id AND business.stars > '"+ rating + "' AND business_categories.category = '" + category + "' AND school.name = '" + school + "' ORDER BY business.stars DESC LIMIT 1");
+
+					r.next();
+
+					String biz_name = r.getString("name");
+					fireSingleBusinessQuery(biz_name, conn);
+
+					r.close();
+					s.close();
+
+
+
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 
 			}
 
@@ -467,7 +504,7 @@ public class Database {
 
 		});
 
-		btnNewButton_1.addSelectionListener(new SelectionListener(){
+		recommend_button.addSelectionListener(new SelectionListener(){
 
 			@Override
 			public void widgetDefaultSelected(SelectionEvent arg0) {
@@ -562,8 +599,9 @@ public class Database {
 
 	private void fireSingleBusinessQuery(String name, Connection conn) throws SQLException
 	{
+		System.out.println(name);
 		Statement s = conn.createStatement();
-		//Statement s2 = conn.createStatement();
+		Statement s2 = conn.createStatement();
 		//For issues where business names contain the ' character
 		//postgres throws a fit and so they must be represented by ''
 		if (name.contains("'"))
@@ -590,18 +628,19 @@ public class Database {
 
 
 		/*Business Reviews query */
-		ResultSet r = s.executeQuery("SELECT review.text, review.votes FROM review, business WHERE business.business_id = review.business_id "
+		ResultSet r2 = s.executeQuery("SELECT review.text, review.votes FROM review, business WHERE business.business_id = review.business_id "
 				+ "AND review.business_id = ("
 				+ "SELECT business_id FROM business WHERE business.name = '" + name + "'" +") "
 				+ "ORDER BY review.votes DESC LIMIT 3");
-		r.next();
-		String raw_review_string = r.getString("text");
+		r2.next();
+		String raw_review_string = r2.getString("text");
 		review_text.setText(raw_review_string);
 
 		/*Additional info query*/
-		r = s.executeQuery(query);
+		ResultSet r = s2.executeQuery(query);
 		String resultsString = "";
 		r.next();
+
 		resultsString = "Name: " + r.getString(1) + "\n";
 		resultsString += "Address: " + r.getString(2) + "\n";
 		resultsString += "City: " + r.getString(3) + "\n";
