@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Properties;
 
@@ -37,7 +38,7 @@ public class Database {
 	private String schoolResult = "";
 	private String cityResult = "";
 	private String stateResult = "";
-	private String cateResults = "";
+	private String cateResult = "";
 	private String ratingResult = "";
 	
 	/**
@@ -181,7 +182,7 @@ public class Database {
 		searchButton.setBounds(156, 425, 94, 28);
 		searchButton.setText("Search");
 
-		final List category_list = new List(Database, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
+		final List category_list = new List(Database, SWT.BORDER | SWT.V_SCROLL);
 		category_list.setBounds(284, 179, 222, 92);
 
 		Statement st2 = conn.createStatement();
@@ -241,7 +242,6 @@ public class Database {
 				Statement s;
 				try {
 					s = conn.createStatement();
-					System.out.println(buildQuery());
 					ResultSet r = s.executeQuery(buildQuery());
 					resultsList.removeAll();
 					while (r.next())
@@ -300,6 +300,14 @@ public class Database {
 				try
 				{
 					cityResult = city_list.getSelection()[0];
+					
+					if (cityResult.contains("'"))
+					{
+						cityResult = cityResult.substring(0, cityResult.indexOf("'")) +
+								"''" + 
+								cityResult.substring(cityResult.indexOf("'") 
+										+ 1, cityResult.length());
+					}
 				}
 				catch (ArrayIndexOutOfBoundsException AE)
 				{
@@ -324,7 +332,6 @@ public class Database {
 				// TODO Auto-generated method stub
 				try
 				{
-					
 					stateResult = state_list.getSelection()[0];
 				}
 				catch (Exception AE)
@@ -348,7 +355,16 @@ public class Database {
 			public void widgetSelected(SelectionEvent arg0) {
 				// TODO Auto-generated method stub
 				try{
-					cateResults = category_list.getSelection()[0];
+					
+					cateResult = category_list.getSelection()[0];
+					if (cateResult.contains("'"))
+					{
+						cateResult = cateResult.substring(0, cateResult.indexOf("'"))
+								+ "''" + cateResult.substring(cateResult.indexOf("'")
+										+ 1, cateResult.length());
+						
+					}
+					
 				}
 				catch (ArrayIndexOutOfBoundsException AE)
 				{
@@ -430,48 +446,67 @@ public class Database {
 		
 		boolean hasWhere = false;
 		
-		if (schoolResult != "")
+		if (cateResult !="")
 		{
-			schoolPortion = "school.name = '" + schoolResult + 
+				
+				catePortion = "business_categories.category = '" + 
+				cateResult + "' AND business_categories.business_id = business.business_id AND ";
+				
+			hasWhere = true;
+		}
+		
+		if (schoolResult != "")
+		{			schoolPortion = "school.name = '" + schoolResult + 
 					"' AND school.city = business.city AND ";
 			hasWhere = true;
 		}
 		
 		if (cityResult != "")
 		{
-			cityPortion = "city = '" + cityResult + "' AND ";
+			cityPortion = "business.city = '" + cityResult + "' AND ";
 			hasWhere = true;
 		}
 		
 		if (stateResult != "" && cityPortion == "")
 		{
-			System.out.println("STATE RESULT = " + stateResult);
-			statePortion = "state = '" + stateResult + "' AND ";
+			statePortion = "business.state = '" + stateResult + "' AND ";
 			hasWhere = true;
 		}
 		
 		if (ratingResult != "")
 		{
-			ratingPortion = "stars > " + ratingResult + " AND ";
+			ratingPortion = "business.stars > " + ratingResult + " AND ";
 			hasWhere = true;
 		}
 		
-		if (hasWhere && schoolPortion == "")
+		if (hasWhere && (schoolPortion == "" && cityPortion == "" && statePortion == ""))
 		{
-			result = "SELECT DISTINCT name FROM business WHERE " + cityPortion + statePortion + ratingPortion;
+			result = "SELECT DISTINCT business.name, business.stars FROM business, business_categories WHERE ";
+			result += catePortion;
+			result += "ORDER BY business.stars LIMIT 10 ";
+		}
+		else if (hasWhere && schoolPortion == "")
+		{
+			result = "SELECT DISTINCT business.name, business.stars FROM business, business_categories WHERE "
+		+ cityPortion + statePortion + ratingPortion + catePortion;
 			result = result.substring(0, result.length() - 4);
-			result += "ORDER BY name LIMIT 10 ";
+			result += "ORDER BY business.stars LIMIT 10 ";
 		}
 		else if (hasWhere)
 		{
-			result = "SELECT DISTINCT business.name FROM business, school WHERE " + schoolPortion + ratingPortion;
-			result = result.substring(0, result.length() - 4);
-			result += "ORDER BY name LIMIT 10 ";
+			result = "SELECT DISTINCT business.name, business.stars FROM business, school,"
+					+ " business_categories WHERE " + schoolPortion + ratingPortion + catePortion;
+				result = result.substring(0, result.length() - 4) ;
+			
+			result += "ORDER BY business.stars LIMIT 10 ";
+			
 		}
 		else
 		{
-			result = "SELECT DISTINCT name FROM business ORDER BY name LIMIT 10 ";
+			result = "SELECT DISTINCT business.name FROM business, business_categories ORDER BY business.stars LIMIT 10";
 		}
+		
+		System.out.println(result);
 		return result;
 	}
 	
@@ -495,13 +530,12 @@ public class Database {
 		if (query.substring(query.indexOf("//") - 1, query.indexOf("//")).equals("."));
 		{
 			query = query.replaceFirst("business.", "");
+			
 			query = query.replaceFirst("//", "business.name, business.address, "
 					+ "business.city, business.state, business.stars, "
 					+ "business.review_count, business.open");
 		}
 		query = query.substring(0, query.indexOf("ORDER"))+ " AND business.name = '" + name + "'";
-		
-		System.out.println(query);
 		
 		ResultSet r = s.executeQuery(query);
 		String resultsString = "";
